@@ -51,7 +51,7 @@ func main() {
 
 	fmt.Println("file name received: ", fileName)
 
-	newFile, err := os.Create("received-data/" + fileName)
+	newFile, err := os.Create("storage-server/" + fileName)
 	utils.HandleError(err)
 
 	defer newFile.Close()
