@@ -9,10 +9,11 @@ import (
 	"time"
 
 	utils "./utils"
+	config "./config"
 	quic "github.com/lucas-clemente/quic-go"
 )
 
-const addr = "0.0.0.0:" + utils.PORT
+const addr = "0.0.0.0:" + config.PORT
 
 func main() {
 
@@ -58,22 +59,25 @@ func main() {
 	var receivedBytes int64
 
 	for {
-		if (fileSize - receivedBytes) < utils.BUFFERSIZE {
-			fmt.Println("last chunk of file.")
+		if (fileSize - receivedBytes) < config.BUFFERSIZE {
+			// fmt.Println("\nlast chunk of file.")
 
-			_, err := io.CopyN(newFile, stream, (fileSize - receivedBytes))
+			recv, err := io.CopyN(newFile, stream, (fileSize - receivedBytes))
 			utils.HandleError(err)
 
-			stream.Read(make([]byte, (receivedBytes + utils.BUFFERSIZE) - fileSize))
+			stream.Read(make([]byte, (receivedBytes + config.BUFFERSIZE) - fileSize))
+			receivedBytes += recv
+			fmt.Printf("\033[2K\rReceived: %d / %d", receivedBytes, fileSize)
+
 			break
 		}
-		_, err := io.CopyN(newFile, stream, utils.BUFFERSIZE)
+		_, err := io.CopyN(newFile, stream, config.BUFFERSIZE)
 		utils.HandleError(err)
 
-		receivedBytes += utils.BUFFERSIZE
+		receivedBytes += config.BUFFERSIZE
 
-		fmt.Println("received (bytes): ", receivedBytes, "\r")
+		fmt.Printf("\033[2K\rReceived: %d / %d", receivedBytes, fileSize)
 	}
 	time.Sleep(2 * time.Second)
-	fmt.Println("Received file completely!")
+	fmt.Println("\n\nReceived file completely!")
 }

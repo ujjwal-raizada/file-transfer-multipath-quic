@@ -11,12 +11,6 @@ import (
 	"os"
 )
 
-// BUFFERSIZE is the size of max packet size
-const BUFFERSIZE = 10240
-
-// PORT the default port for communication
-const PORT = "4242"
-
 func FillString(retunString string, toLength int) string {
 	for {
 		lengtString := len(retunString)
