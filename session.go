@@ -539,7 +539,10 @@ func (s *session) handleFrames(fs []wire.Frame, p *path) error {
 				s.remoteRTTs[frame.PathIDs[i]] = frame.RemoteRTTs[i]
 				if frame.RemoteRTTs[i] >= 30 * time.Minute {
 					// Path is potentially failed
-					s.paths[frame.PathIDs[i]].potentiallyFailed.Set(true)
+					
+					// this is causing segmentation fault in some cases, commenting out till I find the actual cause (TODO).
+					// Till then algorithm will even try to send data via potential failed paths.
+					//s.paths[frame.PathIDs[i]].potentiallyFailed.Set(true)
 				}
 			}
 			s.pathsLock.RUnlock()
