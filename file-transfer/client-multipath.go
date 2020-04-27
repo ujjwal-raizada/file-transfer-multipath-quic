@@ -29,7 +29,7 @@ func main() {
 	text, _ := reader.ReadString('\n')
 
 	if text != "\n" {
-		fileToSend = text
+		fileToSend = text[:len(text) - 1]
 	}
 
 	fmt.Println("Sending File: ", fileToSend)
@@ -71,6 +71,7 @@ func sendFile(stream quic.Stream, fileToSend string) {
 	fmt.Println("Start sending file!\n")
 
 	var sentBytes int64
+	start := time.Now()
 
 	for {
 		sentSize, err := file.Read(sendBuffer)
@@ -87,6 +88,9 @@ func sendFile(stream quic.Stream, fileToSend string) {
 		sentBytes += int64(sentSize)
 		fmt.Printf("\033[2K\rSent: %d / %d", sentBytes, fileInfo.Size())
 	}
+	elapsed := time.Since(start)
+	fmt.Println("\nTransfer took: ", elapsed)
+
 	stream.Close()
 	stream.Close()
 	time.Sleep(2 * time.Second)

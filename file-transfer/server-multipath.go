@@ -57,6 +57,7 @@ func main() {
 
 	defer newFile.Close()
 	var receivedBytes int64
+	start := time.Now()
 
 	for {
 		if (fileSize - receivedBytes) < config.BUFFERSIZE {
@@ -78,6 +79,11 @@ func main() {
 
 		fmt.Printf("\033[2K\rReceived: %d / %d", receivedBytes, fileSize)
 	}
+	elapsed := time.Since(start)
+	fmt.Println("\nTransfer took: ", elapsed)
+
 	time.Sleep(2 * time.Second)
+	stream.Close()
+	stream.Close()
 	fmt.Println("\n\nReceived file completely!")
 }
