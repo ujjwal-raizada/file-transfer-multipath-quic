@@ -14,6 +14,8 @@ import (
 )
 
 const addr = config.SERVER_ADDR
+const threshold = 5 * 1024  // 5KB
+//TODO: set this threshold dynamically, based on network conditions
 
 
 func main() {
@@ -33,6 +35,21 @@ func main() {
 	}
 
 	fmt.Println("Sending File: ", fileToSend)
+
+
+	file, err := os.Open("storage-client/" + fileToSend)
+	utils.HandleError(err)
+
+	fileInfo, err := file.Stat()
+	utils.HandleError(err)
+
+	if fileInfo.Size() <= threshold {
+		quicConfig.CreatePaths = false
+		fmt.Println("File is small, using single path only.")
+	} else {
+		fmt.Println("file is large, using multipath now.")
+	}
+	file.Close()
 
 	fmt.Println("Trying to connect to: ", addr)
 	sess, err := quic.DialAddr(addr, &tls.Config{InsecureSkipVerify: true}, quicConfig)
